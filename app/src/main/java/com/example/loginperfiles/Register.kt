@@ -7,10 +7,9 @@ import android.widget.Button
 import android.widget.TextView
 import com.example.loginperfiles.room.LoginPerfilesApp
 import com.example.loginperfiles.room.PerfilEntity
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
-class MainActivity : AppCompatActivity() {
+class Register : AppCompatActivity() {
 
     lateinit var perfil : PerfilEntity
     lateinit var tvUsuario: TextView
@@ -18,35 +17,25 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_register)
 
-        val btnLogin = findViewById<Button>(R.id.btnLogin)
         val btnRegister = findViewById<Button>(R.id.btnRegister)
         tvUsuario = findViewById<TextView>(R.id.tvUsuario)
         tvPassword = findViewById<TextView>(R.id.tvPassword)
-        val tvError = findViewById<TextView>(R.id.tvError)
 
         btnRegister.setOnClickListener{
+            addPerfil(
+                PerfilEntity(
+                    usuario = tvUsuario.text.toString(),
+                    contrasena = tvPassword.text.toString()
+            ))
             val intent = Intent(applicationContext, Register::class.java)
             startActivity(intent)
         }
-
-        btnLogin.setOnClickListener{
-            getPerfilByUsuario()
-            if (perfil.contrasena == tvPassword.text.toString()){
-                val intent = Intent(applicationContext, Register::class.java)
-                startActivity(intent)
-            } else {
-                tvError.text = "La contraseña no es correcta"
-            }
-        }
-
-
     }
 
-    fun getPerfilByUsuario()= runBlocking {
-        launch {
-            perfil = LoginPerfilesApp.database.perfilDao().getPerfilByUsuario(tvUsuario.text.toString())
-        }
+    fun addPerfil(perfil: PerfilEntity)= runBlocking {
+        val id = LoginPerfilesApp.database.perfilDao().addPerfil(perfil)
     }
+
 }
